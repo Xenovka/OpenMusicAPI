@@ -1,8 +1,12 @@
 require("dotenv").config();
 
 const Hapi = require("@hapi/hapi");
+const music = require("./api/music");
+const MusicService = require("./services/inMemory/MusicService");
 
 const init = async () => {
+    const musicService = new MusicService();
+
     const server = Hapi.server({
         port: process.env.PORT,
         host: process.env.HOST,
@@ -13,11 +17,10 @@ const init = async () => {
         }
     });
 
-    server.route({
-        method: "GET",
-        path: "/",
-        handler: (request, h) => {
-            return "Hello World!";
+    await server.register({
+        plugin: music,
+        options: {
+            service: musicService
         }
     });
 
